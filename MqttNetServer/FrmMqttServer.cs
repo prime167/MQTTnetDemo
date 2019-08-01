@@ -167,12 +167,12 @@ namespace MqttNetServer
 
             _mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Start...");
+                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Started...");
             });
 
             _mqttServer.StoppedHandler= new MqttServerStoppedHandlerDelegate(e=>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Stop...");
+                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Stopped...");
                 
             });
 
