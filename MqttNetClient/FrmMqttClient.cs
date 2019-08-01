@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -16,7 +11,6 @@ using MQTTnet.Client;
 using MQTTnet.Diagnostics;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
-using ServiceStack.Text;
 
 namespace MqttNetClient
 {
@@ -77,8 +71,6 @@ namespace MqttNetClient
                     listBox1.Items.RemoveAt(0);
                 }
             });
-
-            
         }
 
         private void BtnConnect_Click(object sender, EventArgs e)
@@ -248,8 +240,6 @@ namespace MqttNetClient
                      Thread.Sleep(200);
                  }
              });
-            
-            
         }
     }
 }
