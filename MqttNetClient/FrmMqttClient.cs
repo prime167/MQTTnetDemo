@@ -24,7 +24,8 @@ namespace MqttNetClient
 
         private Action<string> _updateListBoxAction;
 
-        private List<IManagedMqttClient> managedMqttClients = new List<IManagedMqttClient>();
+        private readonly List<IManagedMqttClient> _managedMqttClients = new List<IManagedMqttClient>();
+
         public FrmMqttClient()
         {
             InitializeComponent();
@@ -58,7 +59,7 @@ namespace MqttNetClient
             //    }
             //}
 
-            foreach (var value in Enum.GetValues(typeof(MqttQualityOfServiceLevel)))
+            foreach (object value in Enum.GetValues(typeof(MqttQualityOfServiceLevel)))
             {
                 CmbPubMqttQuality.Items.Add((int)value);
                 CmbSubMqttQuality.Items.Add((int)value);
@@ -67,14 +68,14 @@ namespace MqttNetClient
             CmbPubMqttQuality.SelectedItem = 0;
             CmbSubMqttQuality.SelectedIndex = 0;
 
-            _updateListBoxAction = new Action<string>((s) =>
+            _updateListBoxAction = (s) =>
             {
                 listBox1.Items.Add(s);
                 if (listBox1.Items.Count > 100)
                 {
                     listBox1.Items.RemoveAt(0);
                 }
-            });
+            };
         }
 
         private void BtnConnect_Click(object sender, EventArgs e)
@@ -141,7 +142,7 @@ namespace MqttNetClient
 
         private async void BtnMultiDisConnect_Click(object sender, EventArgs e)
         {
-            foreach (var client in managedMqttClients)
+            foreach (IManagedMqttClient client in _managedMqttClients)
             {
                 await client.StopAsync();
                 client.Dispose();
@@ -189,7 +190,7 @@ namespace MqttNetClient
                 _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
                 {
                     listBox1.BeginInvoke(_updateListBoxAction,
-                        $"Client is Connected:  IsSessionPresent:{e.AuthenticateResult.ReasonString}");
+                        $"Client is Connected:  IsSessionPresent:{e.AuthenticateResult}");
                 });
 
                 _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>
@@ -229,7 +230,7 @@ namespace MqttNetClient
 
                 await c.StartAsync(options);
 
-                managedMqttClients.Add(c);
+                _managedMqttClients.Add(c);
 
                 Thread.Sleep(200);
             }

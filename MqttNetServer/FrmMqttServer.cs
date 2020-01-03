@@ -14,7 +14,7 @@ namespace MqttNetServer
 {
     public partial class FrmMqttServer : Form
     {
-        private IMqttServer _mqttServer = null;
+        private IMqttServer _mqttServer;
 
         private Action<string> _updateListBoxAction;
 
@@ -111,7 +111,6 @@ namespace MqttNetServer
             {
                 optionBuilder.WithDefaultEndpointBoundIPAddress(IPAddress.Parse(TxbServer.Text));
             }
-            
             
             optionBuilder.WithConnectionValidator(c =>
             {
