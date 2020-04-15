@@ -33,13 +33,13 @@ namespace MqttNetClient
             MqttNetGlobalLogger.LogMessagePublished += (o, args) =>
             {
                 var s = new StringBuilder();
-                s.Append($"{args.TraceMessage.Timestamp} ");
-                s.Append($"{args.TraceMessage.Level} ");
-                s.Append($"{args.TraceMessage.Source} ");
-                s.Append($"{args.TraceMessage.ThreadId} ");
-                s.Append($"{args.TraceMessage.Message} ");
-                s.Append($"{args.TraceMessage.Exception}");
-                s.Append($"{args.TraceMessage.LogId} ");
+                s.Append($"{args.LogMessage.Timestamp} ");
+                s.Append($"{args.LogMessage.Level} ");
+                s.Append($"{args.LogMessage.Source} ");
+                s.Append($"{args.LogMessage.ThreadId} ");
+                s.Append($"{args.LogMessage.Message} ");
+                s.Append($"{args.LogMessage.Exception}");
+                s.Append($"{args.LogMessage.LogId} ");
             };
         }
 
