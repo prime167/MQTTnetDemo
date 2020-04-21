@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -45,20 +44,6 @@ namespace MqttNetClient
 
         private void FrmMqttClient_Load(object sender, EventArgs e)
         {
-            //var ips = Dns.GetHostAddressesAsync(Dns.GetHostName());
-            //TxbServer.Text = ips.Result[1].ToString();
-            //foreach (var ip in ips.Result)
-            //{
-            //    switch (ip.AddressFamily)
-            //    {
-            //        case AddressFamily.InterNetwork:
-            //            TxbServer.Text = ip.ToString();
-            //            break;
-            //        case AddressFamily.InterNetworkV6:
-            //            break;
-            //    }
-            //}
-
             foreach (object value in Enum.GetValues(typeof(MqttQualityOfServiceLevel)))
             {
                 CmbPubMqttQuality.Items.Add((int)value);
@@ -75,6 +60,9 @@ namespace MqttNetClient
                 {
                     listBox1.Items.RemoveAt(0);
                 }
+
+                var visibleItems = listBox1.ClientRectangle.Height / listBox1.ItemHeight;
+                listBox1.TopIndex = listBox1.Items.Count - visibleItems + 1;
             };
         }
 

@@ -30,6 +30,7 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
             this.BtnStop = new System.Windows.Forms.Button();
             this.TxbPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -38,7 +39,6 @@
             this.BtnStart = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -74,6 +74,15 @@
             this.panel2.Size = new System.Drawing.Size(794, 34);
             this.panel2.TabIndex = 0;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(593, 14);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 12);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Port";
+            // 
             // BtnStop
             // 
             this.BtnStop.Location = new System.Drawing.Point(333, 4);
@@ -107,6 +116,7 @@
             this.TxbServer.Name = "TxbServer";
             this.TxbServer.Size = new System.Drawing.Size(100, 21);
             this.TxbServer.TabIndex = 2;
+            this.TxbServer.Text = "127.0.0.1";
             // 
             // label1
             // 
@@ -145,15 +155,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(800, 450);
             this.panel1.TabIndex = 1;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(593, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 12);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Port";
             // 
             // FrmMqttServer
             // 

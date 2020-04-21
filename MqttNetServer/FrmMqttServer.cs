@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
-
 using MQTTnet;
 using MQTTnet.Client.Receiving;
-using MQTTnet.Server;
 using MQTTnet.Protocol;
+using MQTTnet.Server;
 using ServiceStack;
 
 namespace MqttNetServer
@@ -25,21 +23,6 @@ namespace MqttNetServer
 
         private void FrmMqttServer_Load(object sender, EventArgs e)
         {
-            var ips = Dns.GetHostAddressesAsync(Dns.GetHostName());
-
-            foreach (var ip in ips.Result)
-            {
-                switch (ip.AddressFamily)
-                {
-                    case AddressFamily.InterNetwork:
-                        TxbServer.Text = ip.ToString();
-                        break;
-
-                    case AddressFamily.InterNetworkV6:
-                        break;
-                }
-            }
-
             _updateListBoxAction = (s) =>
             {
                 listBox1.Items.Add(s);
@@ -47,15 +30,15 @@ namespace MqttNetServer
                 {
                     listBox1.Items.RemoveAt(0);
                 }
-                var visibleItems = listBox1.ClientRectangle.Height/listBox1.ItemHeight;
 
+                var visibleItems = listBox1.ClientRectangle.Height / listBox1.ItemHeight;
                 listBox1.TopIndex = listBox1.Items.Count - visibleItems + 1;
             };
-            
+
 
             listBox1.KeyPress += (o, args) =>
             {
-                if (args.KeyChar == 'c' || args.KeyChar=='C')
+                if (args.KeyChar == 'c' || args.KeyChar == 'C')
                 {
                     listBox1.Items.Clear();
                 }
@@ -78,7 +61,7 @@ namespace MqttNetServer
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
-            if (null != _mqttServer )
+            if (null != _mqttServer)
             {
                 foreach (var clientSessionStatus in _mqttServer.GetSessionStatusAsync().Result)
                 {
@@ -111,17 +94,17 @@ namespace MqttNetServer
             {
                 optionBuilder.WithDefaultEndpointBoundIPAddress(IPAddress.Parse(TxbServer.Text));
             }
-            
+
             optionBuilder.WithConnectionValidator(c =>
             {
                 if (c.ClientId.Length < 10)
                 {
-                    c.ReasonCode= MqttConnectReasonCode.ClientIdentifierNotValid;
+                    c.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                     return;
                 }
                 if (!c.Username.Equals("admin"))
                 {
-                    c.ReasonCode= MqttConnectReasonCode.BadUserNameOrPassword;
+                    c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                     return;
                 }
                 if (!c.Password.Equals("public"))
@@ -130,36 +113,36 @@ namespace MqttNetServer
                     return;
                 }
 
-                c.ReasonCode=MqttConnectReasonCode.Success;
+                c.ReasonCode = MqttConnectReasonCode.Success;
             });
-            
+
             _mqttServer = new MqttFactory().CreateMqttServer();
-            _mqttServer.ClientConnectedHandler= new MqttServerClientConnectedHandlerDelegate(e =>
-            {
-                listBox1.BeginInvoke(_updateListBoxAction, $"<Client Connected:ClientId:{e.ClientId}");
-                var s = _mqttServer.GetSessionStatusAsync();
-                label3.BeginInvoke(new Action(() => { label3.Text = $"连接总数：{s.Result.Count}"; }));
-            });
+            _mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(e =>
+             {
+                 listBox1.BeginInvoke(_updateListBoxAction, $"<Client Connected:ClientId:{e.ClientId}");
+                 var s = _mqttServer.GetSessionStatusAsync();
+                 label3.BeginInvoke(new Action(() => { label3.Text = $@"连接总数：{s.Result.Count}"; }));
+             });
 
             _mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e =>
             {
                 listBox1.BeginInvoke(_updateListBoxAction, $"<Client DisConnected:ClientId:{e.ClientId}");
                 var s = _mqttServer.GetSessionStatusAsync();
-                label3.BeginInvoke(new Action(() => { label3.Text = $"连接总数：{s.Result.Count}"; }));
+                label3.BeginInvoke(new Action(() => { label3.Text = $@"连接总数：{s.Result.Count}"; }));
             });
 
-            _mqttServer.ApplicationMessageReceivedHandler =new MqttApplicationMessageReceivedHandlerDelegate(e =>
-            {
-                listBox1.BeginInvoke(_updateListBoxAction,
-                    $"ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
-            });
+            _mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
+             {
+                 listBox1.BeginInvoke(_updateListBoxAction,
+                     $"ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
+             });
 
-            _mqttServer.ClientSubscribedTopicHandler= new MqttServerClientSubscribedHandlerDelegate(e=>
-            {
-                listBox1.BeginInvoke(_updateListBoxAction, $"@ClientSubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
-            });
+            _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedHandlerDelegate(e =>
+             {
+                 listBox1.BeginInvoke(_updateListBoxAction, $"@ClientSubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
+             });
 
-            _mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(e=>
+            _mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(e =>
             {
                 listBox1.BeginInvoke(_updateListBoxAction, $"%ClientUnsubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
             });
@@ -169,11 +152,11 @@ namespace MqttNetServer
                 listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Started...");
             });
 
-            _mqttServer.StoppedHandler= new MqttServerStoppedHandlerDelegate(e=>
-            {
-                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Stopped...");
-                
-            });
+            _mqttServer.StoppedHandler = new MqttServerStoppedHandlerDelegate(e =>
+             {
+                 listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Stopped...");
+
+             });
 
             await _mqttServer.StartAsync(optionBuilder.Build());
         }
