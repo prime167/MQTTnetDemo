@@ -31,8 +31,7 @@ namespace MqttNetServer
                     listBox1.Items.RemoveAt(0);
                 }
 
-                var visibleItems = listBox1.ClientRectangle.Height / listBox1.ItemHeight;
-                listBox1.TopIndex = listBox1.Items.Count - visibleItems + 1;
+                listBox1.TopIndex = listBox1.Items.Count - 1;
             };
 
 
