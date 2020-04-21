@@ -141,7 +141,12 @@ namespace MqttNetClient
         {
             try
             {
-                var options = new MqttClientOptions { ClientId = Guid.NewGuid().ToString("D"), ProtocolVersion = MqttProtocolVersion.V500 };
+                var options = new MqttClientOptions
+                {
+                    ClientId = Guid.NewGuid().ToString("D"), 
+                    ProtocolVersion = MqttProtocolVersion.V500
+                };
+
                 options.ChannelOptions = new MqttClientTcpOptions
                 {
                     Server = TxbServer.Text,
