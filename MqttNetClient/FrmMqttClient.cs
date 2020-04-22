@@ -55,6 +55,7 @@ namespace MqttNetClient
 
             _updateListBoxAction = (s) =>
             {
+                listBox1.BeginUpdate();
                 listBox1.Items.Add(s);
                 if (listBox1.Items.Count > 100)
                 {
@@ -62,6 +63,7 @@ namespace MqttNetClient
                 }
 
                 listBox1.TopIndex = listBox1.Items.Count - 1;
+                listBox1.EndUpdate();
             };
         }
 
@@ -175,20 +177,20 @@ namespace MqttNetClient
                 {
                     listBox1.BeginInvoke(
                         _updateListBoxAction,
-                        $"ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
+                        $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
                         );
                 });
 
                 _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
                 {
                     listBox1.BeginInvoke(_updateListBoxAction,
-                        $"Client is Connected:  IsSessionPresent:{e.AuthenticateResult}");
+                        $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.AuthenticateResult}");
                 });
 
                 _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>
                 {
                     listBox1.BeginInvoke(_updateListBoxAction,
-                        $"Client is DisConnected ClientWasConnected:{e.ClientWasConnected}");
+                        $"{DateTime.Now} Client is DisConnected ClientWasConnected:{e.ClientWasConnected}");
                 });
 
                 await _mqttClient.ConnectAsync(options);

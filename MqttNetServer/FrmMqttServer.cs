@@ -25,6 +25,7 @@ namespace MqttNetServer
         {
             _updateListBoxAction = (s) =>
             {
+                listBox1.BeginUpdate();
                 listBox1.Items.Add(s);
                 if (listBox1.Items.Count > 1000)
                 {
@@ -32,6 +33,7 @@ namespace MqttNetServer
                 }
 
                 listBox1.TopIndex = listBox1.Items.Count - 1;
+                listBox1.EndUpdate();
             };
 
 
@@ -118,42 +120,42 @@ namespace MqttNetServer
             _mqttServer = new MqttFactory().CreateMqttServer();
             _mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(e =>
              {
-                 listBox1.BeginInvoke(_updateListBoxAction, $"<Client Connected:ClientId:{e.ClientId}");
+                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client Connected:ClientId:{e.ClientId}");
                  var s = _mqttServer.GetSessionStatusAsync();
-                 label3.BeginInvoke(new Action(() => { label3.Text = $@"连接总数：{s.Result.Count}"; }));
+                 label3.BeginInvoke(new Action(() => { label3.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
              });
 
             _mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, $"<Client DisConnected:ClientId:{e.ClientId}");
+                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client DisConnected:ClientId:{e.ClientId}");
                 var s = _mqttServer.GetSessionStatusAsync();
-                label3.BeginInvoke(new Action(() => { label3.Text = $@"连接总数：{s.Result.Count}"; }));
+                label3.BeginInvoke(new Action(() => { label3.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
             });
 
             _mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
              {
                  listBox1.BeginInvoke(_updateListBoxAction,
-                     $"ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
+                     $"{DateTime.Now} ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
              });
 
             _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedHandlerDelegate(e =>
              {
-                 listBox1.BeginInvoke(_updateListBoxAction, $"@ClientSubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
+                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} @ClientSubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
              });
 
             _mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, $"%ClientUnsubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
+                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} %ClientUnsubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
             });
 
             _mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Started...");
+                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Started...");
             });
 
             _mqttServer.StoppedHandler = new MqttServerStoppedHandlerDelegate(e =>
              {
-                 listBox1.BeginInvoke(_updateListBoxAction, "Mqtt Server Stopped...");
+                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Stopped...");
 
              });
 
