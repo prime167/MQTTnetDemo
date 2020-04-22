@@ -150,9 +150,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(463, 11);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 12);
+            this.label6.Size = new System.Drawing.Size(35, 12);
             this.label6.TabIndex = 23;
-            this.label6.Text = "连接数量";
+            this.label6.Text = "Count";
             // 
             // BtnDisConnect
             // 
@@ -258,7 +258,7 @@
             this.txbSubscribe.Name = "txbSubscribe";
             this.txbSubscribe.Size = new System.Drawing.Size(419, 21);
             this.txbSubscribe.TabIndex = 20;
-            this.txbSubscribe.Text = "biobase/bsc";
+            this.txbSubscribe.Text = "home/temp";
             // 
             // label5
             // 
@@ -319,7 +319,7 @@
             this.TxbTopic.Name = "TxbTopic";
             this.TxbTopic.Size = new System.Drawing.Size(499, 21);
             this.TxbTopic.TabIndex = 17;
-            this.TxbTopic.Text = "biobase/bsc";
+            this.TxbTopic.Text = "home/temp";
             // 
             // label4
             // 
@@ -349,7 +349,7 @@
             this.TxbPayload.Name = "TxbPayload";
             this.TxbPayload.Size = new System.Drawing.Size(646, 21);
             this.TxbPayload.TabIndex = 22;
-            this.TxbPayload.Text = "1883";
+            this.TxbPayload.Text = "23";
             // 
             // label7
             // 
