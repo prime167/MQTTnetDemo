@@ -30,7 +30,6 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
             this.BtnStop = new System.Windows.Forms.Button();
             this.TxbPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -39,6 +38,7 @@
             this.BtnStart = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblClientCount = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -61,7 +61,7 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.lblClientCount);
             this.panel2.Controls.Add(this.BtnStop);
             this.panel2.Controls.Add(this.TxbPort);
             this.panel2.Controls.Add(this.label2);
@@ -73,15 +73,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(794, 34);
             this.panel2.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(593, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 12);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Port";
             // 
             // BtnStop
             // 
@@ -156,6 +147,15 @@
             this.panel1.Size = new System.Drawing.Size(800, 450);
             this.panel1.TabIndex = 1;
             // 
+            // lblClientCount
+            // 
+            this.lblClientCount.AutoSize = true;
+            this.lblClientCount.Location = new System.Drawing.Point(593, 14);
+            this.lblClientCount.Name = "lblClientCount";
+            this.lblClientCount.Size = new System.Drawing.Size(77, 12);
+            this.lblClientCount.TabIndex = 6;
+            this.lblClientCount.Text = "Client Count";
+            // 
             // FrmMqttServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -185,7 +185,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BtnStop;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblClientCount;
     }
 }
 

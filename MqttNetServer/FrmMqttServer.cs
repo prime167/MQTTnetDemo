@@ -6,7 +6,6 @@ using MQTTnet;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
-using ServiceStack;
 
 namespace MqttNetServer
 {
@@ -91,7 +90,7 @@ namespace MqttNetServer
                     .WithConnectionBacklog(1000)
                     .WithDefaultEndpointPort(Convert.ToInt32(TxbPort.Text));
 
-            if (!TxbServer.Text.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(TxbServer.Text))
             {
                 optionBuilder.WithDefaultEndpointBoundIPAddress(IPAddress.Parse(TxbServer.Text));
             }
@@ -122,14 +121,14 @@ namespace MqttNetServer
              {
                  listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client Connected:ClientId:{e.ClientId}");
                  var s = _mqttServer.GetSessionStatusAsync();
-                 label3.BeginInvoke(new Action(() => { label3.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
+                 lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
              });
 
             _mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e =>
             {
                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client DisConnected:ClientId:{e.ClientId}");
                 var s = _mqttServer.GetSessionStatusAsync();
-                label3.BeginInvoke(new Action(() => { label3.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
+                lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
             });
 
             _mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
