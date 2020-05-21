@@ -163,7 +163,6 @@ namespace MqttNetClient
 
                 options.CleanSession = true;
                 options.KeepAlivePeriod = TimeSpan.FromSeconds(100.5);
-                options.KeepAliveSendInterval = TimeSpan.FromSeconds(20000);
 
                 if (null != _mqttClient)
                 {
