@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -87,7 +86,7 @@ namespace MqttNetClient
             try
             {
                 await _mqttClient.SubscribeAsync(
-                    new TopicFilter
+                    new MqttTopicFilter
                     {
                         Topic = txbSubscribe.Text,
                         QualityOfServiceLevel = (MqttQualityOfServiceLevel)Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)
@@ -216,7 +215,7 @@ namespace MqttNetClient
 
                 var c = new MqttFactory().CreateManagedMqttClient();
                 await c.SubscribeAsync(
-                    new TopicFilterBuilder().WithTopic(txbSubscribe.Text)
+                    new MqttTopicFilterBuilder().WithTopic(txbSubscribe.Text)
                         .WithQualityOfServiceLevel(
                             (MqttQualityOfServiceLevel)
                                 Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)).Build());
