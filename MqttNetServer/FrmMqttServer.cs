@@ -102,11 +102,13 @@ namespace MqttNetServer
                     c.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                     return;
                 }
+
                 if (!c.Username.Equals("admin"))
                 {
                     c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                     return;
                 }
+
                 if (!c.Password.Equals("public"))
                 {
                     c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
@@ -119,14 +121,14 @@ namespace MqttNetServer
             _mqttServer = new MqttFactory().CreateMqttServer();
             _mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(e =>
              {
-                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client Connected:ClientId:{e.ClientId}");
+                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Connected:ClientId:{e.ClientId}");
                  var s = _mqttServer.GetSessionStatusAsync();
                  lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
              });
 
             _mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} <Client DisConnected:ClientId:{e.ClientId}");
+                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Disconnected:ClientId:{e.ClientId}");
                 var s = _mqttServer.GetSessionStatusAsync();
                 lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
             });
@@ -139,12 +141,12 @@ namespace MqttNetServer
 
             _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedHandlerDelegate(e =>
              {
-                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} @ClientSubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
+                 listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
              });
 
             _mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(e =>
             {
-                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} %ClientUnsubscribedTopic ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
+                listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client unsubscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
             });
 
             _mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(e =>
