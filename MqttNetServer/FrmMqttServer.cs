@@ -22,7 +22,7 @@ namespace MqttNetServer
 
         private void FrmMqttServer_Load(object sender, EventArgs e)
         {
-            _updateListBoxAction = (s) =>
+            _updateListBoxAction = s =>
             {
                 listBox1.BeginUpdate();
                 listBox1.Items.Add(s);

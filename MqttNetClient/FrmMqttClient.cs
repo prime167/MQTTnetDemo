@@ -18,6 +18,9 @@ namespace MqttNetClient
 {
     public partial class FrmMqttClient : Form
     {
+        private string _username = "admin";
+        private string _password = "public";
+
         private IMqttClient _mqttClient;
 
         private Action<string> _updateListBoxAction;
@@ -156,8 +159,8 @@ namespace MqttNetClient
 
                 options.Credentials = new MqttClientCredentials
                 {
-                    Username = "admin",
-                    Password = Encoding.UTF8.GetBytes("public")
+                    Username = _username,
+                    Password = Encoding.UTF8.GetBytes(_password)
                 };
 
                 options.CleanSession = true;
@@ -208,12 +211,12 @@ namespace MqttNetClient
                 .WithClientOptions(new MqttClientOptionsBuilder()
                     .WithClientId(Guid.NewGuid().ToString().Substring(0, 13))
                     .WithTcpServer(TxbServer.Text, Convert.ToInt32(TxbPort.Text))
-                    .WithCredentials("admin", "public")
+                    .WithCredentials(_username, _password)
                     .Build()
                 )
                 .Build();
 
-                var c = new MqttFactory().CreateManagedMqttClient();
+                IManagedMqttClient c = new MqttFactory().CreateManagedMqttClient();
                 await c.SubscribeAsync(
                     new MqttTopicFilterBuilder().WithTopic(txbSubscribe.Text)
                         .WithQualityOfServiceLevel(
