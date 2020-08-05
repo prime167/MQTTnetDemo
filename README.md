@@ -1,4 +1,4 @@
-# MqttnetDemo
+# MQTTnetDemo
 ![.github/workflows/main.yml](https://github.com/prime167/MqttnetDemo/workflows/.github/workflows/main.yml/badge.svg)
 
 A [MQTTnet](https://github.com/chkr1011/MQTTnet) Demo
