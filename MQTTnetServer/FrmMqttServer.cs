@@ -157,7 +157,6 @@ namespace MqttNetServer
             _mqttServer.StoppedHandler = new MqttServerStoppedHandlerDelegate(e =>
              {
                  listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Stopped...");
-
              });
 
             await _mqttServer.StartAsync(optionBuilder.Build());
