@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio 16
+VisualStudioVersion = 16.7.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTnetServer", "MQTTnetServer\MQTTnetServer.csproj", "{B0C01277-BBF1-4A23-B700-4E4B6954A3B7}"
 EndProject
