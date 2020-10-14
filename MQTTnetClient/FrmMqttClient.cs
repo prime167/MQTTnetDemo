@@ -76,7 +76,7 @@ namespace MqttNetClient
 
         private async void BtnDisConnect_Click(object sender, EventArgs e)
         {
-            if (null != _mqttClient && _mqttClient.IsConnected)
+            if (_mqttClient is not null && _mqttClient.IsConnected)
             {
                 await _mqttClient.DisconnectAsync();
                 _mqttClient.Dispose();
@@ -115,7 +115,7 @@ namespace MqttNetClient
                     Retain = false
                 };
 
-                if (null != _mqttClient)
+                if (_mqttClient is not null)
                 {
                     await _mqttClient.PublishAsync(msg);
                 }

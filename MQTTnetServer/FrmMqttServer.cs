@@ -61,7 +61,7 @@ namespace MqttNetServer
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
-            if (null != _mqttServer)
+            if (_mqttServer is not null)
             {
                 foreach (var clientSessionStatus in _mqttServer.GetSessionStatusAsync().Result)
                 {
@@ -80,7 +80,7 @@ namespace MqttNetServer
 
         private async void MqttServer()
         {
-            if (null != _mqttServer)
+            if (_mqttServer is not null)
             {
                 return;
             }
