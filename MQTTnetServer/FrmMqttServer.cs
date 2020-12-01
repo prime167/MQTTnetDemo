@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using Common;
 using MQTTnet;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Protocol;
@@ -18,6 +19,7 @@ namespace MqttNetServer
         public FrmMqttServer()
         {
             InitializeComponent();
+            listBox1.DoubleBuffering(true);
         }
 
         private void FrmMqttServer_Load(object sender, EventArgs e)

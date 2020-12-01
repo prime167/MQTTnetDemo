@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.7.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTnetClient", "MQTTnetClient\MQTTnetClient.csproj", "{CBE45B4E-7919-431D-A30F-3790A78EA079}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnetClient", "MQTTnetClient\MQTTnetClient.csproj", "{CBE45B4E-7919-431D-A30F-3790A78EA079}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTnetServer", "MQTTnetServer\MQTTnetServer.csproj", "{EB2601E7-BD60-4068-9010-9BAEB8AFF1A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnetServer", "MQTTnetServer\MQTTnetServer.csproj", "{EB2601E7-BD60-4068-9010-9BAEB8AFF1A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{FEC62BE7-1B4D-4539-A47D-830309D7BA78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EB2601E7-BD60-4068-9010-9BAEB8AFF1A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB2601E7-BD60-4068-9010-9BAEB8AFF1A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB2601E7-BD60-4068-9010-9BAEB8AFF1A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC62BE7-1B4D-4539-A47D-830309D7BA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC62BE7-1B4D-4539-A47D-830309D7BA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC62BE7-1B4D-4539-A47D-830309D7BA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC62BE7-1B4D-4539-A47D-830309D7BA78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

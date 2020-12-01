@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Common;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -30,6 +31,7 @@ namespace MqttNetClient
         public FrmMqttClient()
         {
             InitializeComponent();
+            listBox1.DoubleBuffering(true);
 
             MqttNetGlobalLogger.LogMessagePublished += (o, args) =>
             {
