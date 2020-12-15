@@ -26,7 +26,7 @@ namespace MqttNetClient
 
         private Action<string> _updateListBoxAction;
 
-        private readonly List<IManagedMqttClient> _managedMqttClients = new List<IManagedMqttClient>();
+        private readonly List<IManagedMqttClient> _managedMqttClients = new();
 
         public FrmMqttClient()
         {
