@@ -33,7 +33,8 @@ namespace MqttNetClient
             InitializeComponent();
             listBox1.DoubleBuffering(true);
 
-            MqttNetGlobalLogger.LogMessagePublished += (o, args) =>
+            var logger = new MqttNetLogger();
+            logger.LogMessagePublished += (o, args) =>
             {
                 var s = new StringBuilder();
                 s.Append($"{args.LogMessage.Timestamp} ");
