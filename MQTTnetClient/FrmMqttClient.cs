@@ -10,7 +10,6 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
-using MQTTnet.Diagnostics;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Formatter;
 using MQTTnet.Protocol;
@@ -32,19 +31,6 @@ namespace MqttNetClient
         {
             InitializeComponent();
             listBox1.DoubleBuffering(true);
-
-            var logger = new MqttNetLogger();
-            logger.LogMessagePublished += (o, args) =>
-            {
-                var s = new StringBuilder();
-                s.Append($"{args.LogMessage.Timestamp} ");
-                s.Append($"{args.LogMessage.Level} ");
-                s.Append($"{args.LogMessage.Source} ");
-                s.Append($"{args.LogMessage.ThreadId} ");
-                s.Append($"{args.LogMessage.Message} ");
-                s.Append($"{args.LogMessage.Exception}");
-                s.Append($"{args.LogMessage.LogId} ");
-            };
         }
 
         private void FrmMqttClient_Load(object sender, EventArgs e)
@@ -188,7 +174,7 @@ namespace MqttNetClient
                 _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
                 {
                     listBox1.BeginInvoke(_updateListBoxAction,
-                        $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.AuthenticateResult}");
+                        $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.ConnectResult}");
                 });
 
                 _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>

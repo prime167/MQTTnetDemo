@@ -141,7 +141,7 @@ namespace MqttNetServer
                      $"{DateTime.Now} ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
              });
 
-            _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedHandlerDelegate(e =>
+            _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedTopicHandlerDelegate(e =>
              {
                  listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
              });
