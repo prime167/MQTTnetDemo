@@ -14,210 +14,209 @@ using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Formatter;
 using MQTTnet.Protocol;
 
-namespace MqttNetClient
+namespace MqttNetClient;
+
+public partial class FrmMqttClient : Form
 {
-    public partial class FrmMqttClient : Form
+    private string _username = "admin";
+    private string _password = "public";
+
+    private IMqttClient _mqttClient;
+
+    private Action<string> _updateListBoxAction;
+
+    private readonly List<IManagedMqttClient> _managedMqttClients = new();
+
+    public FrmMqttClient()
     {
-        private string _username = "admin";
-        private string _password = "public";
+        InitializeComponent();
+        listBox1.DoubleBuffering(true);
+    }
 
-        private IMqttClient _mqttClient;
-
-        private Action<string> _updateListBoxAction;
-
-        private readonly List<IManagedMqttClient> _managedMqttClients = new();
-
-        public FrmMqttClient()
+    private void FrmMqttClient_Load(object sender, EventArgs e)
+    {
+        foreach (object value in Enum.GetValues(typeof(MqttQualityOfServiceLevel)))
         {
-            InitializeComponent();
-            listBox1.DoubleBuffering(true);
+            CmbPubMqttQuality.Items.Add((int)value);
+            CmbSubMqttQuality.Items.Add((int)value);
         }
 
-        private void FrmMqttClient_Load(object sender, EventArgs e)
+        CmbPubMqttQuality.SelectedItem = 0;
+        CmbSubMqttQuality.SelectedIndex = 0;
+
+        _updateListBoxAction = (s) =>
         {
-            foreach (object value in Enum.GetValues(typeof(MqttQualityOfServiceLevel)))
+            listBox1.BeginUpdate();
+            listBox1.Items.Add(s);
+            if (listBox1.Items.Count > 100)
             {
-                CmbPubMqttQuality.Items.Add((int)value);
-                CmbSubMqttQuality.Items.Add((int)value);
+                listBox1.Items.RemoveAt(0);
             }
 
-            CmbPubMqttQuality.SelectedItem = 0;
-            CmbSubMqttQuality.SelectedIndex = 0;
+            listBox1.TopIndex = listBox1.Items.Count - 1;
+            listBox1.EndUpdate();
+        };
+    }
 
-            _updateListBoxAction = (s) =>
-            {
-                listBox1.BeginUpdate();
-                listBox1.Items.Add(s);
-                if (listBox1.Items.Count > 100)
+    private void BtnConnect_Click(object sender, EventArgs e)
+    {
+        MqttClient();
+    }
+
+    private async void BtnDisConnect_Click(object sender, EventArgs e)
+    {
+        if (_mqttClient is not null && _mqttClient.IsConnected)
+        {
+            await _mqttClient.DisconnectAsync();
+            _mqttClient.Dispose();
+            _mqttClient = null;
+        }
+    }
+
+    private async void BtnSubscribe_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            await _mqttClient.SubscribeAsync(
+                new MqttTopicFilter
                 {
-                    listBox1.Items.RemoveAt(0);
-                }
+                    Topic = txbSubscribe.Text,
+                    QualityOfServiceLevel = (MqttQualityOfServiceLevel)Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)
+                });
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 
-                listBox1.TopIndex = listBox1.Items.Count - 1;
-                listBox1.EndUpdate();
+    private async void BtnSend_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var msg = new MqttApplicationMessage
+            {
+                Topic = TxbTopic.Text,
+                Payload = Encoding.UTF8.GetBytes(TxbPayload.Text),
+                QualityOfServiceLevel =
+                    (MqttQualityOfServiceLevel)
+                        Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbPubMqttQuality.Text),
+                Retain = false
             };
-        }
 
-        private void BtnConnect_Click(object sender, EventArgs e)
-        {
-            MqttClient();
+            if (_mqttClient is not null)
+            {
+                await _mqttClient.PublishAsync(msg);
+            }
         }
-
-        private async void BtnDisConnect_Click(object sender, EventArgs e)
+        catch (Exception)
         {
-            if (_mqttClient is not null && _mqttClient.IsConnected)
+            throw;
+        }
+    }
+
+    private void BtnMultiConnect_Click(object sender, EventArgs e)
+    {
+        MqttMultiClient(Convert.ToInt32(TxbConnectCount.Text));
+    }
+
+    private async void BtnMultiDisConnect_Click(object sender, EventArgs e)
+    {
+        foreach (IManagedMqttClient client in _managedMqttClients)
+        {
+            await client.StopAsync();
+            client.Dispose();
+            Thread.Sleep(100);
+        }
+    }
+
+    private async void MqttClient()
+    {
+        try
+        {
+            var options = new MqttClientOptions
+            {
+                ClientId = Guid.NewGuid().ToString("D"), 
+                ProtocolVersion = MqttProtocolVersion.V500
+            };
+
+            options.ChannelOptions = new MqttClientTcpOptions
+            {
+                Server = TxbServer.Text,
+                Port = Convert.ToInt32(TxbPort.Text)
+            };
+
+            options.Credentials = new MqttClientCredentials
+            {
+                Username = _username,
+                Password = Encoding.UTF8.GetBytes(_password)
+            };
+
+            options.CleanSession = true;
+            options.KeepAlivePeriod = TimeSpan.FromSeconds(100.5);
+
+            if (null != _mqttClient)
             {
                 await _mqttClient.DisconnectAsync();
-                _mqttClient.Dispose();
                 _mqttClient = null;
             }
-        }
 
-        private async void BtnSubscribe_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                await _mqttClient.SubscribeAsync(
-                    new MqttTopicFilter
-                    {
-                        Topic = txbSubscribe.Text,
-                        QualityOfServiceLevel = (MqttQualityOfServiceLevel)Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)
-                    });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+            _mqttClient = new MqttFactory().CreateMqttClient();
 
-        private async void BtnSend_Click(object sender, EventArgs e)
-        {
-            try
+            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
             {
-                var msg = new MqttApplicationMessage
-                {
-                    Topic = TxbTopic.Text,
-                    Payload = Encoding.UTF8.GetBytes(TxbPayload.Text),
-                    QualityOfServiceLevel =
+                listBox1.BeginInvoke(
+                    _updateListBoxAction,
+                    $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
+                    );
+            });
+
+            _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
+            {
+                listBox1.BeginInvoke(_updateListBoxAction,
+                    $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.ConnectResult}");
+            });
+
+            _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>
+            {
+                listBox1.BeginInvoke(_updateListBoxAction,
+                    $"{DateTime.Now} Client is DisConnected ClientWasConnected:{e.ClientWasConnected}");
+            });
+
+            await _mqttClient.ConnectAsync(options);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    private async void MqttMultiClient(int clientsCount)
+    {
+        for (int i = 0; i < clientsCount; i++)
+        {
+            var options = new ManagedMqttClientOptionsBuilder()
+            .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+            .WithClientOptions(new MqttClientOptionsBuilder()
+                .WithClientId(Guid.NewGuid().ToString().Substring(0, 13))
+                .WithTcpServer(TxbServer.Text, Convert.ToInt32(TxbPort.Text))
+                .WithCredentials(_username, _password)
+                .Build()
+            )
+            .Build();
+
+            IManagedMqttClient c = new MqttFactory().CreateManagedMqttClient();
+            await c.SubscribeAsync(
+                new MqttTopicFilterBuilder().WithTopic(txbSubscribe.Text)
+                    .WithQualityOfServiceLevel(
                         (MqttQualityOfServiceLevel)
-                            Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbPubMqttQuality.Text),
-                    Retain = false
-                };
+                            Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)).Build());
 
-                if (_mqttClient is not null)
-                {
-                    await _mqttClient.PublishAsync(msg);
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+            await c.StartAsync(options);
 
-        private void BtnMultiConnect_Click(object sender, EventArgs e)
-        {
-            MqttMultiClient(Convert.ToInt32(TxbConnectCount.Text));
-        }
+            _managedMqttClients.Add(c);
 
-        private async void BtnMultiDisConnect_Click(object sender, EventArgs e)
-        {
-            foreach (IManagedMqttClient client in _managedMqttClients)
-            {
-                await client.StopAsync();
-                client.Dispose();
-                Thread.Sleep(100);
-            }
-        }
-
-        private async void MqttClient()
-        {
-            try
-            {
-                var options = new MqttClientOptions
-                {
-                    ClientId = Guid.NewGuid().ToString("D"), 
-                    ProtocolVersion = MqttProtocolVersion.V500
-                };
-
-                options.ChannelOptions = new MqttClientTcpOptions
-                {
-                    Server = TxbServer.Text,
-                    Port = Convert.ToInt32(TxbPort.Text)
-                };
-
-                options.Credentials = new MqttClientCredentials
-                {
-                    Username = _username,
-                    Password = Encoding.UTF8.GetBytes(_password)
-                };
-
-                options.CleanSession = true;
-                options.KeepAlivePeriod = TimeSpan.FromSeconds(100.5);
-
-                if (null != _mqttClient)
-                {
-                    await _mqttClient.DisconnectAsync();
-                    _mqttClient = null;
-                }
-
-                _mqttClient = new MqttFactory().CreateMqttClient();
-
-                _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
-                {
-                    listBox1.BeginInvoke(
-                        _updateListBoxAction,
-                        $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
-                        );
-                });
-
-                _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
-                {
-                    listBox1.BeginInvoke(_updateListBoxAction,
-                        $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.ConnectResult}");
-                });
-
-                _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>
-                {
-                    listBox1.BeginInvoke(_updateListBoxAction,
-                        $"{DateTime.Now} Client is DisConnected ClientWasConnected:{e.ClientWasConnected}");
-                });
-
-                await _mqttClient.ConnectAsync(options);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        private async void MqttMultiClient(int clientsCount)
-        {
-            for (int i = 0; i < clientsCount; i++)
-            {
-                var options = new ManagedMqttClientOptionsBuilder()
-                .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-                .WithClientOptions(new MqttClientOptionsBuilder()
-                    .WithClientId(Guid.NewGuid().ToString().Substring(0, 13))
-                    .WithTcpServer(TxbServer.Text, Convert.ToInt32(TxbPort.Text))
-                    .WithCredentials(_username, _password)
-                    .Build()
-                )
-                .Build();
-
-                IManagedMqttClient c = new MqttFactory().CreateManagedMqttClient();
-                await c.SubscribeAsync(
-                    new MqttTopicFilterBuilder().WithTopic(txbSubscribe.Text)
-                        .WithQualityOfServiceLevel(
-                            (MqttQualityOfServiceLevel)
-                                Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)).Build());
-
-                await c.StartAsync(options);
-
-                _managedMqttClients.Add(c);
-
-                Thread.Sleep(200);
-            }
+            Thread.Sleep(200);
         }
     }
 }
