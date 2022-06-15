@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Common;
 using MQTTnet;
-using MQTTnet.Client.Receiving;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 
@@ -12,7 +12,7 @@ namespace MqttNetServer;
 
 public partial class FrmMqttServer : Form
 {
-    private IMqttServer _mqttServer;
+    private MqttServer _mqttServer;
 
     private Action<string> _updateListBoxAction;
 
@@ -65,7 +65,7 @@ public partial class FrmMqttServer : Form
     {
         if (_mqttServer is not null)
         {
-            foreach (var clientSessionStatus in _mqttServer.GetSessionStatusAsync().Result)
+            foreach (var clientSessionStatus in _mqttServer.GetSessionsAsync().Result)
             {
                 clientSessionStatus.DeleteAsync();
             }
@@ -87,80 +87,87 @@ public partial class FrmMqttServer : Form
             return;
         }
 
-        var optionBuilder =
-            new MqttServerOptionsBuilder()
-                .WithConnectionBacklog(1000)
-                .WithDefaultEndpointPort(Convert.ToInt32(TxbPort.Text));
+        var optionBuilder = new MqttServerOptionsBuilder();
+        optionBuilder = 
+            optionBuilder
+            .WithDefaultEndpoint()
+            .WithConnectionBacklog(1000)
+            .WithDefaultEndpointPort(Convert.ToInt32(TxbPort.Text));
 
         if (!string.IsNullOrEmpty(TxbServer.Text))
         {
             optionBuilder.WithDefaultEndpointBoundIPAddress(IPAddress.Parse(TxbServer.Text));
         }
 
-        optionBuilder.WithConnectionValidator(c =>
+        var options = optionBuilder.Build();
+        _mqttServer = new MqttFactory().CreateMqttServer(options);
+        _mqttServer.ValidatingConnectionAsync +=c =>
         {
+            c.ReasonCode = MqttConnectReasonCode.Success;
             if (c.ClientId.Length < 10)
             {
                 c.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                return;
             }
 
             if (!c.Username.Equals("admin"))
             {
                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                return;
             }
 
             if (!c.Password.Equals("public"))
             {
                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                return;
             }
 
-            c.ReasonCode = MqttConnectReasonCode.Success;
-        });
+            return Task.CompletedTask;
+        };
 
-        _mqttServer = new MqttFactory().CreateMqttServer();
-        _mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(e =>
+        _mqttServer.ClientConnectedAsync+= e =>
          {
              listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Connected:ClientId:{e.ClientId}");
-             var s = _mqttServer.GetSessionStatusAsync();
+             var s = _mqttServer.GetSessionsAsync();
              lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
-         });
+             return Task.CompletedTask;
+         };
 
-        _mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e =>
+        _mqttServer.ClientDisconnectedAsync += e =>
         {
             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Disconnected:ClientId:{e.ClientId}");
-            var s = _mqttServer.GetSessionStatusAsync();
+            var s = _mqttServer.GetSessionsAsync();
             lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
-        });
+            return Task.CompletedTask;
+        };
 
-        _mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
-         {
-             listBox1.BeginInvoke(_updateListBoxAction,
-                 $"{DateTime.Now} ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
-         });
+        //_mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
+        // {
+        //     listBox1.BeginInvoke(_updateListBoxAction,
+        //         $"{DateTime.Now} ClientId:{e.ClientId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
+        // });
 
-        _mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedTopicHandlerDelegate(e =>
-         {
+        _mqttServer.ClientSubscribedTopicAsync += e =>
+        {
              listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
-         });
+            return Task.CompletedTask;
+        };
 
-        _mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(e =>
+        _mqttServer.ClientUnsubscribedTopicAsync+= e =>
         {
             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client unsubscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
-        });
+            return Task.CompletedTask;
+        };
 
-        _mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(e =>
+        _mqttServer.StartedAsync+= e =>
         {
             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Started...");
-        });
+            return Task.CompletedTask;
+        };
 
-        _mqttServer.StoppedHandler = new MqttServerStoppedHandlerDelegate(e =>
+        _mqttServer.StoppedAsync+= e =>
          {
              listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Stopped...");
-         });
+             return Task.CompletedTask;
+         };
 
-        await _mqttServer.StartAsync(optionBuilder.Build());
+        await _mqttServer.StartAsync();
     }
 }

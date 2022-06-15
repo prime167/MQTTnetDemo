@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Common;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Options;
-using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Formatter;
+using MQTTnet.Packets;
 using MQTTnet.Protocol;
 
 namespace MqttNetClient;
@@ -77,12 +75,16 @@ public partial class FrmMqttClient : Form
     {
         try
         {
-            await _mqttClient.SubscribeAsync(
+            var so = new MqttClientSubscribeOptions();
+            so.TopicFilters = new List<MqttTopicFilter>
+            {
                 new MqttTopicFilter
                 {
                     Topic = txbSubscribe.Text,
                     QualityOfServiceLevel = (MqttQualityOfServiceLevel)Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)
-                });
+                }
+            };
+            await _mqttClient.SubscribeAsync(so);
         }
         catch (Exception)
         {
@@ -136,8 +138,8 @@ public partial class FrmMqttClient : Form
         {
             var options = new MqttClientOptions
             {
-                ClientId = Guid.NewGuid().ToString("D"), 
-                ProtocolVersion = MqttProtocolVersion.V500
+                ClientId = Guid.NewGuid().ToString("D"),
+                ProtocolVersion = MqttProtocolVersion.V500,
             };
 
             options.ChannelOptions = new MqttClientTcpOptions
@@ -146,11 +148,7 @@ public partial class FrmMqttClient : Form
                 Port = Convert.ToInt32(TxbPort.Text)
             };
 
-            options.Credentials = new MqttClientCredentials
-            {
-                Username = _username,
-                Password = Encoding.UTF8.GetBytes(_password)
-            };
+            options.Credentials = new MqttClientCredentials(_username, Encoding.UTF8.GetBytes(_password));
 
             options.CleanSession = true;
             options.KeepAlivePeriod = TimeSpan.FromSeconds(100.5);
@@ -163,25 +161,21 @@ public partial class FrmMqttClient : Form
 
             _mqttClient = new MqttFactory().CreateMqttClient();
 
-            _mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(e =>
+            _mqttClient.ApplicationMessageReceivedAsync+=e =>
             {
                 listBox1.BeginInvoke(
                     _updateListBoxAction,
                     $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
                     );
-            });
+                return Task.CompletedTask;
+            };
 
-            _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e =>
+            _mqttClient.DisconnectedAsync+=e =>
             {
                 listBox1.BeginInvoke(_updateListBoxAction,
                     $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.ConnectResult}");
-            });
-
-            _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(e =>
-            {
-                listBox1.BeginInvoke(_updateListBoxAction,
-                    $"{DateTime.Now} Client is DisConnected ClientWasConnected:{e.ClientWasConnected}");
-            });
+                return Task.CompletedTask;
+            };
 
             await _mqttClient.ConnectAsync(options);
         }
@@ -206,11 +200,17 @@ public partial class FrmMqttClient : Form
             .Build();
 
             IManagedMqttClient c = new MqttFactory().CreateManagedMqttClient();
-            await c.SubscribeAsync(
-                new MqttTopicFilterBuilder().WithTopic(txbSubscribe.Text)
-                    .WithQualityOfServiceLevel(
-                        (MqttQualityOfServiceLevel)
-                            Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)).Build());
+            var so = new MqttClientSubscribeOptions();
+            so.TopicFilters = new List<MqttTopicFilter>
+            {
+                new MqttTopicFilter
+                {
+                    Topic = txbSubscribe.Text,
+                    QualityOfServiceLevel = (MqttQualityOfServiceLevel)Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbSubMqttQuality.Text)
+                }
+            };
+            await c.SubscribeAsync(so.TopicFilters);
+           
 
             await c.StartAsync(options);
 
