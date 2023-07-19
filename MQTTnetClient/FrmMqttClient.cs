@@ -99,7 +99,7 @@ public partial class FrmMqttClient : Form
             var msg = new MqttApplicationMessage
             {
                 Topic = TxbTopic.Text,
-                Payload = Encoding.UTF8.GetBytes(TxbPayload.Text),
+                PayloadSegment = Encoding.UTF8.GetBytes(TxbPayload.Text),
                 QualityOfServiceLevel =
                     (MqttQualityOfServiceLevel)
                         Enum.Parse(typeof(MqttQualityOfServiceLevel), CmbPubMqttQuality.Text),
@@ -151,7 +151,7 @@ public partial class FrmMqttClient : Form
             options.Credentials = new MqttClientCredentials(_username, Encoding.UTF8.GetBytes(_password));
 
             options.CleanSession = true;
-            options.KeepAlivePeriod = TimeSpan.FromSeconds(100.5);
+            options.KeepAlivePeriod = TimeSpan.FromSeconds(100);
 
             if (null != _mqttClient)
             {
@@ -161,7 +161,7 @@ public partial class FrmMqttClient : Form
 
             _mqttClient = new MqttFactory().CreateMqttClient();
 
-            _mqttClient.ApplicationMessageReceivedAsync+=e =>
+            _mqttClient.ApplicationMessageReceivedAsync += e =>
             {
                 listBox1.BeginInvoke(
                     _updateListBoxAction,
@@ -170,7 +170,7 @@ public partial class FrmMqttClient : Form
                 return Task.CompletedTask;
             };
 
-            _mqttClient.DisconnectedAsync+=e =>
+            _mqttClient.DisconnectedAsync += e =>
             {
                 listBox1.BeginInvoke(_updateListBoxAction,
                     $"{DateTime.Now} Client is Connected:  IsSessionPresent:{e.ConnectResult}");
@@ -210,7 +210,7 @@ public partial class FrmMqttClient : Form
                 }
             };
             await c.SubscribeAsync(so.TopicFilters);
-           
+
 
             await c.StartAsync(options);
 

@@ -88,7 +88,7 @@ public partial class FrmMqttServer : Form
         }
 
         var optionBuilder = new MqttServerOptionsBuilder();
-        optionBuilder = 
+        optionBuilder =
             optionBuilder
             .WithDefaultEndpoint()
             .WithConnectionBacklog(1000)
@@ -101,7 +101,7 @@ public partial class FrmMqttServer : Form
 
         var options = optionBuilder.Build();
         _mqttServer = new MqttFactory().CreateMqttServer(options);
-        _mqttServer.ValidatingConnectionAsync +=c =>
+        _mqttServer.ValidatingConnectionAsync += c =>
         {
             c.ReasonCode = MqttConnectReasonCode.Success;
             if (c.ClientId.Length < 10)
@@ -109,7 +109,7 @@ public partial class FrmMqttServer : Form
                 c.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
             }
 
-            if (!c.Username.Equals("admin"))
+            if (!c.UserName.Equals("admin"))
             {
                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
             }
@@ -122,7 +122,7 @@ public partial class FrmMqttServer : Form
             return Task.CompletedTask;
         };
 
-        _mqttServer.ClientConnectedAsync+= e =>
+        _mqttServer.ClientConnectedAsync += e =>
          {
              listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Connected:ClientId:{e.ClientId}");
              var s = _mqttServer.GetSessionsAsync();
@@ -146,23 +146,23 @@ public partial class FrmMqttServer : Form
 
         _mqttServer.ClientSubscribedTopicAsync += e =>
         {
-             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
+            listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
             return Task.CompletedTask;
         };
 
-        _mqttServer.ClientUnsubscribedTopicAsync+= e =>
+        _mqttServer.ClientUnsubscribedTopicAsync += e =>
         {
             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client unsubscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
             return Task.CompletedTask;
         };
 
-        _mqttServer.StartedAsync+= e =>
+        _mqttServer.StartedAsync += e =>
         {
             listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Started...");
             return Task.CompletedTask;
         };
 
-        _mqttServer.StoppedAsync+= e =>
+        _mqttServer.StoppedAsync += e =>
          {
              listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Stopped...");
              return Task.CompletedTask;
