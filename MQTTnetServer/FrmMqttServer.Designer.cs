@@ -88,7 +88,7 @@
             // 
             // BtnStop
             // 
-            BtnStop.Location = new System.Drawing.Point(388, 6);
+            BtnStop.Location = new System.Drawing.Point(388, 5);
             BtnStop.Margin = new System.Windows.Forms.Padding(4);
             BtnStop.Name = "BtnStop";
             BtnStop.Size = new System.Drawing.Size(88, 40);
