@@ -210,8 +210,6 @@ public partial class FrmMqttClient : Form
                 }
             };
             await c.SubscribeAsync(so.TopicFilters);
-
-
             await c.StartAsync(options);
 
             _managedMqttClients.Add(c);
