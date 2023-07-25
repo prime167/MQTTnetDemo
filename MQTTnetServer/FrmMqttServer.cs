@@ -27,7 +27,7 @@ public partial class FrmMqttServer : Form
         _updateListBoxAction = s =>
         {
             listBox1.BeginUpdate();
-            listBox1.Items.Add(s);
+            listBox1.Items.Add("{DateTime.Now}" + s);
             if (listBox1.Items.Count > 1000)
             {
                 listBox1.Items.RemoveAt(0);
@@ -136,41 +136,41 @@ public partial class FrmMqttServer : Form
 
     private Task ClientUnsubscribedTopicAsync(ClientUnsubscribedTopicEventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client unsubscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Client unsubscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Length}");
         return Task.CompletedTask;
     }
 
     private Task ClientSubscribedTopicAsync(ClientSubscribedTopicEventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Client subscribed topic. ClientId:{e.ClientId} Topic:{e.TopicFilter.Topic} QualityOfServiceLevel:{e.TopicFilter.QualityOfServiceLevel}");
         return Task.CompletedTask;
     }
 
     private Task ClientConnectedAsync(ClientConnectedEventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Connected:ClientId:{e.ClientId}");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Client Connected:ClientId:{e.ClientId}");
         var s = _mqttServer.GetSessionsAsync();
-        lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
+        lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"连接总数：{s.Result.Count}"; }));
         return Task.CompletedTask;
     }
 
     private Task ClientDisconnectedAsync(ClientDisconnectedEventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Client Disconnected:ClientId:{e.ClientId}");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Client Disconnected:ClientId:{e.ClientId}");
         var s = _mqttServer.GetSessionsAsync();
-        lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"{DateTime.Now} 连接总数：{s.Result.Count}"; }));
+        lblClientCount.BeginInvoke(new Action(() => { lblClientCount.Text = $@"连接总数：{s.Result.Count}"; }));
         return Task.CompletedTask;
     }
 
     private Task StoppedAsync(EventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Stopped...");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Mqtt Server Stopped...");
         return Task.CompletedTask;
     }
 
     private Task StartedAsync(EventArgs e)
     {
-        listBox1.BeginInvoke(_updateListBoxAction, $"{DateTime.Now} Mqtt Server Started...");
+        listBox1.BeginInvoke(_updateListBoxAction, $"Mqtt Server Started...");
         return Task.CompletedTask;
     }
 
@@ -193,7 +193,7 @@ public partial class FrmMqttServer : Form
     private Task ApplicationMessageNotConsumedAsync(ApplicationMessageNotConsumedEventArgs e)
     {
         listBox1.BeginInvoke(_updateListBoxAction,
-                             $"{DateTime.Now} ClientId:{e.ApplicationMessage} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
+                             $"ClientId:{e.SenderId} Topic:{e.ApplicationMessage.Topic} Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} QualityOfServiceLevel:{e.ApplicationMessage.QualityOfServiceLevel}");
         return Task.CompletedTask;
     }
 }
