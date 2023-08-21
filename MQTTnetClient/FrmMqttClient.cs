@@ -163,9 +163,10 @@ public partial class FrmMqttClient : Form
 
             _mqttClient.ApplicationMessageReceivedAsync += e =>
             {
+                var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment.Array);
                 listBox1.BeginInvoke(
                     _updateListBoxAction,
-                    $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
+                    $"{DateTime.Now} ClientID:{e.ClientId} | TOPIC:{e.ApplicationMessage.Topic} | Payload:{payload} | QoS:{e.ApplicationMessage.QualityOfServiceLevel} | Retain:{e.ApplicationMessage.Retain}"
                     );
                 return Task.CompletedTask;
             };
