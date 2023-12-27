@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="MQTTnet" Version="4.2.*" />
-    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.2.*" />
+    <PackageReference Include="MQTTnet" Version="4.3.3.*" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.3.*" />
   </ItemGroup>
     
   <ItemGroup>

@@ -2,12 +2,12 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0-windows</TargetFramework>
+        <TargetFramework>net8.0-windows</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="MQTTnet" Version="4.2.*" />
+        <PackageReference Include="MQTTnet" Version="4.3.3.*" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Common\Common.csproj" />
